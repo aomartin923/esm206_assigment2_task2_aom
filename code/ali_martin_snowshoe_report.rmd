@@ -1,0 +1,90 @@
+---
+title: "Task 2: Snowshoe Report"
+author: "Ali Martin"
+date: "11/3/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(lubridate)
+library(kableExtra)
+library(here)
+library(janitor)
+```
+
+## Introduction
+
+## Data and Analyses
+
+## Juvenile Hare Initial Investigation
+
+### Annual hare trap counts
+
+```{r}
+bonanza_hares <- read.csv(here("data" , "bonanza_hares.csv" )) %>% clean_names() #read in the data
+
+```
+
+
+```{r}
+juvenile_hares <- bonanza_hares %>% # create new data frame
+  filter(age == "j") %>% # filter to include juvenile hares
+  mutate(date = mdy(date)) %>%  #mutate date to class "date"
+  mutate(year = year(date)) %>% # add new column year
+  group_by(year) %>% # group by year - 
+  summarize(count=n()) 
+
+juvenile_hares
+
+```
+
+Finalized graph
+```{r, fig.cap= "Figure 1 Caption:The figure above shows the number of juvenile snowshoe hares trapped according to each year"}
+ggplot(data = juvenile_hares, aes(x = year, y = count)) +
+  geom_col(fill = "cyan")+ 
+  scale_x_continuous(breaks = seq(from= 1999, to=2012, by = 1)) +
+                       labs (x = "Number of Juvenile Hares Trapped",
+                           y = "Year", 
+                           title = "Number of Juvenile Snowshoe Hares Trapped by Year") +
+                       theme_classic()
+
+```
+
+
+```{r}
+
+#Summary statistics
+hare_stats <- juvenile_hares %>%
+  summarize(mean_hares = round(mean(count), 2),
+    med_hares = round(median(count), 2))
+
+hare_stats
+```
+
+
+
+The maximum number of hare trappings occurred in the year 1999 at a count of 126 trappings that year. The minimum counts of juvenile hare trappings occurred in 2010, at a number of only 2 trappings. Overall, the mean number of hares trapped is 31.5 and the median number of hares trapped is 18.5. In the years 2002 and 2009, there does not seem to be any data that includes number of juvenile hares that were trapped. The 
+
+### Visualize Juvenile Hare Weights
+
+```{r}
+# create data frame to only include juveniles
+juvenile_hares_weight <- bonanza_hares
+
+```
+
+
+```{r}
+ggplot(data = bonanza_hares, aes(fill= sex, y=weight, x=sex)) + 
+    geom_boxplot(aes(color = sex)) +
+  scale_color_manual(values = c("lightpink1","cornflowerblue", "azure4")) +
+  ggtitle("Juvenile Hare weights by Sex and Site") +
+    facet_wrap(~grid) +
+    theme_bw()
+   
+```
+
+
